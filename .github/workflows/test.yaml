@@ -1,0 +1,16 @@
+name: A Simple CI CD Test
+
+on:
+    push:
+        branches: 
+            - server
+jobs:
+    step1:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
+              
+            - name: Run Hello World
+              run: |
+                echo "Hello, World!"
