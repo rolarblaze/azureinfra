@@ -1,0 +1,32 @@
+name: Terraform Azure Deploy 
+
+on: 
+    push:
+        branches:
+            - server
+jobs:
+    terraform:
+        runs-on: ubuntu-latest
+    
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+              
+            - name: Setup up Terraform 
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.4.5
+            
+            - name: Azure Login
+              uses: azure/login@v1
+              with:
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
+            
+            - name: Initialize Terraform 
+              uses: terrform init 
+            
+            - name: Terraform Plan 
+              uses: terraform plan 
+
+            - name: Validate Terraform Code
+              uses: terraform validate 
