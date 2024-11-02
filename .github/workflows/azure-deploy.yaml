@@ -25,9 +25,17 @@ jobs:
             
             - name: Initialize Terraform 
               run: terraform init 
-            
+
+            - name: Generate SSH Public Key File
+              run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+              shell: bash
+
             - name: Terraform Plan 
-              run: terraform plan 
+              run: terraform plan -var="ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" -out=tfplan
 
             - name: Validate Terraform Code
               run: terraform validate 
+
+            - name: Terraform Apply
+              if: github.ref == 'refs/heads/main'  # Only applies on the main branch
+              run: terraform apply -auto-approve tfplan

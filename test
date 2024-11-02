@@ -27,7 +27,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -var="ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'  # Only applies on the main branch
