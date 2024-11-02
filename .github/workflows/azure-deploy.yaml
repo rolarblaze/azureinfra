@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - vnet
+    workflow_dispatch:  
 jobs:
     terraform:
         runs-on: ubuntu-latest
@@ -11,12 +12,30 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
-              
+
+            - name: Cache Terraform Plugins
+              uses: actions/cache@v2
+              with:
+                path: ~/.terraform.d/plugin-cache
+                key: terraform-plugins-${{ runner.os }}-${{ hashFiles('**/*.tf') }}
+                restore-keys: |
+                  terraform-plugins-${{ runner.os }}-
+                    
             - name: Setup up Terraform 
               uses: hashicorp/setup-terraform@v2
               with:
                 terraform_version: 1.4.5
-            
+            - name: Initialize Terraform
+              run: terraform init -backend=config
+        
+            - name: Add SSH Public Key
+              env:
+                SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "$SSH_PUBLIC_KEY" >> ~/.ssh/id_rsa.pub
+                  chmod 600 ~/.ssh/id_rsa.pub
+        
             
             - name: Azure Login
               uses: azure/login@v1
@@ -30,16 +49,12 @@ jobs:
             - name: Initialize Terraform 
               run: terraform init 
 
-            - name: Generate SSH Public Key File
-              run: echo "${{ secrets.SSH_PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
-              shell: bash
-
             - name: Terraform Plan 
-              run: terraform plan -var="ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" -out=tfplan
+              run: terraform plan -out=tfplan
 
             - name: Validate Terraform Code
               run: terraform validate 
 
             - name: Terraform Apply
-              if: github.ref == 'refs/heads/main'  # Only applies on the main branch
+              if: github.ref == 'refs/heads/vnet'  # Only applies on the main branch
               run: terraform apply -auto-approve tfplan
