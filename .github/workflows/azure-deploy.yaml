@@ -42,19 +42,18 @@ jobs:
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-
             - name: Create SSH Directory
               run: mkdir -p ~/.ssh
-            
-            - name: Initialize Terraform 
-              run: terraform init 
-
+          
             - name: Terraform Plan 
               run: terraform plan -out=tfplan
 
             - name: Validate Terraform Code
-              run: terraform validate 
+              run: terraform validate
 
+            - name: Terraform Format
+              run: terraform fmt 
+              
             - name: Terraform Apply
               if: github.ref == 'refs/heads/vnet'  # Only applies on the main branch
               run: terraform apply -auto-approve tfplan

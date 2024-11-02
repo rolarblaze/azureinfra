@@ -1,1 +1,4 @@
-variable "public_key" {}
+variable "public_key" {
+    description = "for ssh "
+    type = string
+}
