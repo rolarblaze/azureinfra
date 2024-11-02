@@ -1,1 +1,0 @@
-All team are to create a terraform project to deploy a VM and VNET 
