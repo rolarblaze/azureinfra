@@ -26,7 +26,7 @@ jobs:
               with:
                 terraform_version: 1.4.5
             - name: Initialize Terraform
-              run: terraform init -backend=config
+              run: terraform init 
         
             - name: Add SSH Public Key
               env:
