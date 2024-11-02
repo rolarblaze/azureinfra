@@ -23,10 +23,10 @@ jobs:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
             
             - name: Initialize Terraform 
-              uses: terrform init 
+              run: terrform init 
             
             - name: Terraform Plan 
-              uses: terraform plan 
+              run: terraform plan 
 
             - name: Validate Terraform Code
-              uses: terraform validate 
+              run: terraform validate 
